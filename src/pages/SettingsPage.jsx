@@ -1,3 +1,14 @@
+import DashboardLayout from "@/layouts/DashboardLayout"
+
 export default function SettingsPage() {
-  return <div>Settings Page</div>
+
+  return (
+    <DashboardLayout>
+
+      <h1 className="text-4xl font-bold text-white">
+        Settings
+      </h1>
+
+    </DashboardLayout>
+  )
 }

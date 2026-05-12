@@ -1,27 +1,65 @@
-import { useEffect } from "react"
-import { supabase } from "@/lib/supabase"
+import { useEffect, useState } from "react"
+
+import { useAuthContext } from "@/contexts/AuthContext"
+
+import CreateHouseholdPage from "./CreateHouseholdPage"
+
+import { getUserHousehold } from "@/services/householdService"
+
+import DashboardLayout from "@/layouts/DashboardLayout"
 
 export default function HomePage() {
 
+  const { user } = useAuthContext()
+
+  const [household, setHousehold] = useState(null)
+
+  const [loading, setLoading] = useState(true)
+
   useEffect(() => {
-    async function loadProducts() {
 
-      const { data, error } = await supabase
-        .from("products")
-        .select("*")
+    async function loadHousehold() {
 
-      console.log("DATA:", data)
-      console.log("ERROR:", error)
+      if (!user) return
+
+      const { data } = await getUserHousehold(user.id)
+
+      setHousehold(data)
+
+      setLoading(false)
     }
 
-    loadProducts()
-  }, [])
+    loadHousehold()
+
+  }, [user])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    )
+  }
+
+  if (!household) {
+    return <CreateHouseholdPage />
+  }
 
   return (
-    <div className="dark min-h-screen bg-background text-foreground flex items-center justify-center">
+  <DashboardLayout>
+
+    <div className="space-y-4">
+
       <h1 className="text-4xl font-bold">
-        Home Page
+        {household.households.name}
       </h1>
+
+      <p className="text-zinc-400">
+        {user.email}
+      </p>
+
     </div>
-  )
+
+  </DashboardLayout>
+)
 }
